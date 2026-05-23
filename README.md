@@ -6,9 +6,14 @@ A full-stack DSA practice tracker built with the MERN stack and deployed on AWS.
 
 **https://codepath.priyansu.in/**
 
+**Demo video:** https://www.awesomescreenshot.com/video/52874359?key=4c48c429c091c5b50809692c82e49905
+
 **Demo credentials:**
 - Email: `demo@codepath.com`
 - Password: `Demo@1234`
+- Admin: `admin@codepath.com` / `Admin@1234`
+
+The app is publicly browsable — sign in only to save progress.
 
 ---
 
