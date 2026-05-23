@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
-import { Check, Undo2 } from 'lucide-react';
+import { Check, ChevronDown, Undo2 } from 'lucide-react';
 import { topicsApi } from '../../api/topics';
 import { progressApi } from '../../api/progress';
 import { ProblemRow } from './ProblemRow';
@@ -118,17 +118,25 @@ export function TopicPage() {
 
       {/* Mobile topic selector */}
       <div className="lg:hidden px-4 py-2.5 border-b border-dim bg-surface">
-        <select
-          value={slug}
-          onChange={(e) => navigate(`/topics/${e.target.value}`)}
-          className="w-full rounded-lg px-3 py-2 text-sm outline-none bg-surface-2 border border-dim text-prose"
-        >
-          {allTopics.map((t) => (
-            <option key={t._id} value={t.slug}>
-              {t.title} · {t.stats?.completed ?? 0}/{t.stats?.total ?? 0}
-            </option>
-          ))}
-        </select>
+        <div className="relative">
+          <select
+            value={slug}
+            onChange={(e) => navigate(`/topics/${e.target.value}`)}
+            className="w-full rounded-lg pl-3 pr-9 py-2 text-sm outline-none bg-surface-2 border border-dim text-prose appearance-none"
+          >
+            {allTopics.map((t) => (
+              <option key={t._id} value={t.slug}>
+                {t.title} · {t.stats?.completed ?? 0}/{t.stats?.total ?? 0}
+              </option>
+            ))}
+          </select>
+          <ChevronDown
+            size={16}
+            strokeWidth={2}
+            aria-hidden="true"
+            className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted"
+          />
+        </div>
       </div>
 
       {/* Body */}

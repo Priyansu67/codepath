@@ -1,4 +1,5 @@
 import { Clock } from 'lucide-react';
+import { CompanyTags } from '../../components/CompanyTags';
 import { DifficultyBadge } from '../../components/DifficultyBadge';
 import { ResourceLinks } from '../../components/ResourceLinks';
 import type { Problem } from '../../types';
@@ -22,17 +23,13 @@ export function ProblemRow({ problem, onToggle }: Props) {
     }
   }
 
-  const companies = problem.companyTags ?? [];
-  const visibleCompanies = companies.slice(0, 2);
-  const extraCount = companies.length - visibleCompanies.length;
-
   return (
     <div
       role="button"
       tabIndex={0}
       onClick={toggle}
       onKeyDown={handleKeyDown}
-      className={`flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-3 rounded-xl transition-all border border-transparent hover:bg-surface hover:border-dim cursor-pointer ${
+      className={`grid items-center gap-x-2 sm:gap-x-3 px-3 sm:px-4 py-3 rounded-xl transition-all border border-transparent hover:bg-surface hover:border-dim cursor-pointer grid-cols-[auto_minmax(0,1fr)_auto_auto] sm:grid-cols-[auto_minmax(0,1fr)_5.5rem_auto_auto] lg:grid-cols-[auto_minmax(0,1fr)_9.5rem_5.5rem_4.5rem_5.75rem] ${
         isCompleted ? 'opacity-60' : ''
       }`}
     >
@@ -42,7 +39,7 @@ export function ProblemRow({ problem, onToggle }: Props) {
       </div>
 
       <span
-        className={`flex-1 text-sm font-medium truncate min-w-0 text-prose ${
+        className={`text-sm font-medium truncate min-w-0 text-prose ${
           isCompleted ? 'line-through decoration-muted' : ''
         }`}
         title={problem.title}
@@ -50,39 +47,24 @@ export function ProblemRow({ problem, onToggle }: Props) {
         {problem.title}
       </span>
 
-      {/* Company chips — desktop only */}
-      {visibleCompanies.length > 0 && (
-        <div className="hidden lg:flex items-center gap-1 shrink-0 pointer-events-none">
-          {visibleCompanies.map((c) => (
-            <span
-              key={c}
-              className="text-[10px] px-1.5 py-0.5 rounded font-mono-dm border border-dim text-muted truncate max-w-[72px]"
-              title={c}
-            >
-              {c}
-            </span>
-          ))}
-          {extraCount > 0 && (
-            <span className="text-[10px] px-1.5 py-0.5 rounded font-mono-dm border border-dim text-muted">
-              +{extraCount}
-            </span>
-          )}
-        </div>
-      )}
+      <div className="hidden lg:flex items-center justify-end min-w-0 pointer-events-auto">
+        <CompanyTags companies={problem.companyTags ?? []} />
+      </div>
 
-      {/* Time badge — tablet and up */}
-      {problem.avgTime && (
-        <span className="hidden sm:inline-flex items-center gap-1 shrink-0 text-[10px] px-2 py-0.5 rounded font-mono-dm border border-dim text-muted pointer-events-none whitespace-nowrap">
-          <Clock size={11} strokeWidth={2} />
-          {problem.avgTime}
-        </span>
-      )}
+      <div className="hidden sm:flex items-center justify-end pointer-events-none">
+        {problem.avgTime ? (
+          <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded font-mono-dm border border-dim text-muted whitespace-nowrap">
+            <Clock size={11} strokeWidth={2} />
+            {problem.avgTime}
+          </span>
+        ) : null}
+      </div>
 
-      <span className="shrink-0 pointer-events-none">
+      <div className="flex items-center justify-center pointer-events-none">
         <DifficultyBadge difficulty={problem.difficulty} />
-      </span>
+      </div>
 
-      <div className="shrink-0" onClick={(e) => e.stopPropagation()}>
+      <div className="flex items-center justify-end w-[5.75rem] shrink-0" onClick={(e) => e.stopPropagation()}>
         <ResourceLinks resources={problem.resources} />
       </div>
     </div>

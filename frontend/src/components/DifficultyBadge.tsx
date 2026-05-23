@@ -6,7 +6,7 @@ const cls = {
 
 export function DifficultyBadge({ difficulty }: { difficulty: 'easy' | 'medium' | 'hard' }) {
   return (
-    <span className={`font-mono-dm text-xs px-2 py-0.5 rounded-full font-medium tracking-wide capitalize ${cls[difficulty]}`}>
+    <span className={`inline-block min-w-[4.25rem] text-center font-mono-dm text-xs px-2 py-0.5 rounded-full font-medium tracking-wide capitalize ${cls[difficulty]}`}>
       {difficulty}
     </span>
   );
