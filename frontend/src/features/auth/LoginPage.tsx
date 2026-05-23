@@ -2,7 +2,15 @@ import { useState, FormEvent } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { authApi } from '../../api/auth';
+import { progressApi } from '../../api/progress';
 import { useAuthStore } from './authStore';
+import { queryClient } from '../../lib/queryClient';
+import { QUERY_KEYS } from '../../lib/constants';
+
+interface LoginLocationState {
+  from?: { pathname: string };
+  pendingToggle?: { problemId: string; isCompleted: boolean };
+}
 
 export function LoginPage() {
   const navigate = useNavigate();
@@ -13,7 +21,9 @@ export function LoginPage() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const from = (location.state as { from?: { pathname: string } })?.from?.pathname ?? '/dashboard';
+  const state = (location.state as LoginLocationState | null) ?? {};
+  const from = state.from?.pathname ?? '/';
+  const pendingToggle = state.pendingToggle;
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -21,6 +31,19 @@ export function LoginPage() {
     try {
       const data = await authApi.login({ email, password });
       setAuth(data.user, data.accessToken);
+
+      if (pendingToggle) {
+        try {
+          await progressApi.toggle(pendingToggle.problemId, pendingToggle.isCompleted);
+        } catch {
+          toast.error('Signed in, but could not save progress. Try again.');
+        }
+      }
+
+      await queryClient.invalidateQueries({ queryKey: QUERY_KEYS.topics });
+      await queryClient.invalidateQueries({ queryKey: ['topic'] });
+      await queryClient.invalidateQueries({ queryKey: QUERY_KEYS.stats });
+
       navigate(from, { replace: true });
     } catch (err: unknown) {
       const msg =
@@ -39,7 +62,9 @@ export function LoginPage() {
           <h1 className="font-syne font-extrabold text-2xl tracking-tight text-prose">
             Code<span className="text-accent">Path</span>
           </h1>
-          <p className="text-sm mt-1 text-muted">Sign in to track your progress</p>
+          <p className="text-sm mt-1 text-muted">
+            {pendingToggle ? 'Sign in to save your progress' : 'Sign in to track your progress'}
+          </p>
         </div>
 
         <form

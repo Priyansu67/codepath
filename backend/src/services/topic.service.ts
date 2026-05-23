@@ -37,13 +37,15 @@ interface TopicWithStats {
   stats: TopicStats;
 }
 
-export async function getAllTopics(userId: string): Promise<TopicWithStats[]> {
+export async function getAllTopics(userId?: string): Promise<TopicWithStats[]> {
   const [topics, problems, progress] = await Promise.all([
     Topic.find().sort({ order: 1 }).lean(),
     Problem.find().select('topicId difficulty').lean(),
-    UserProgress.find({ userId: new Types.ObjectId(userId), isCompleted: true })
-      .select('problemId')
-      .lean(),
+    userId
+      ? UserProgress.find({ userId: new Types.ObjectId(userId), isCompleted: true })
+          .select('problemId')
+          .lean()
+      : Promise.resolve([]),
   ]);
 
   const completedSet = new Set(progress.map((p) => p.problemId.toString()));
@@ -76,16 +78,18 @@ export async function getAllTopics(userId: string): Promise<TopicWithStats[]> {
   });
 }
 
-export async function getTopicBySlug(slug: string, userId: string): Promise<TopicDetailResult> {
+export async function getTopicBySlug(slug: string, userId?: string): Promise<TopicDetailResult> {
   const topic = await Topic.findOne({ slug }).lean();
   if (!topic) throw new AppError('Topic not found', 404, 'NOT_FOUND');
 
   const problems = await Problem.find({ topicId: topic._id }).sort({ order: 1 }).lean();
 
-  const progress = await UserProgress.find({
-    userId: new Types.ObjectId(userId),
-    problemId: { $in: problems.map((p) => p._id) },
-  }).lean();
+  const progress = userId
+    ? await UserProgress.find({
+        userId: new Types.ObjectId(userId),
+        problemId: { $in: problems.map((p) => p._id) },
+      }).lean()
+    : [];
 
   const progressMap = new Map(progress.map((p) => [p.problemId.toString(), p]));
 

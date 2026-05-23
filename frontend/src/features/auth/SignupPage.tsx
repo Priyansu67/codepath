@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { authApi } from '../../api/auth';
 import { useAuthStore } from './authStore';
+import { queryClient } from '../../lib/queryClient';
+import { QUERY_KEYS } from '../../lib/constants';
 
 export function SignupPage() {
   const navigate = useNavigate();
@@ -19,7 +21,10 @@ export function SignupPage() {
     try {
       const data = await authApi.signup({ name, email, password });
       setAuth(data.user, data.accessToken);
-      navigate('/dashboard', { replace: true });
+      await queryClient.invalidateQueries({ queryKey: QUERY_KEYS.topics });
+      await queryClient.invalidateQueries({ queryKey: ['topic'] });
+      await queryClient.invalidateQueries({ queryKey: QUERY_KEYS.stats });
+      navigate('/', { replace: true });
     } catch (err: unknown) {
       const msg =
         (err as { response?: { data?: { error?: { message?: string } } } })?.response?.data?.error

@@ -64,7 +64,7 @@ export function ProblemRow({ problem, onToggle }: Props) {
         <DifficultyBadge difficulty={problem.difficulty} />
       </div>
 
-      <div className="flex items-center justify-end w-[5.75rem] shrink-0" onClick={(e) => e.stopPropagation()}>
+      <div className="flex items-center justify-end w-23 shrink-0" onClick={(e) => e.stopPropagation()}>
         <ResourceLinks resources={problem.resources} />
       </div>
     </div>

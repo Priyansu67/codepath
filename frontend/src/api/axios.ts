@@ -66,8 +66,11 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError, null);
+        const wasAuthenticated = useAuthStore.getState().isAuthenticated;
         useAuthStore.getState().logout();
-        window.location.href = '/login';
+        if (wasAuthenticated) {
+          window.location.href = '/login';
+        }
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;

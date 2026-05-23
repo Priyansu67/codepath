@@ -1,13 +1,14 @@
 import { useState, useMemo } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, useLocation, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { Check, ChevronDown, Undo2 } from 'lucide-react';
 import { topicsApi } from '../../api/topics';
 import { progressApi } from '../../api/progress';
 import { ProblemRow } from './ProblemRow';
-import { UserMenu } from '../../components/UserMenu';
+import { AppHeader } from '../../components/AppHeader';
 import { TopicIcon } from '../../components/TopicIcon';
+import { useAuthStore } from '../auth/authStore';
 import { QUERY_KEYS } from '../../lib/constants';
 import type { Problem } from '../../types';
 
@@ -25,10 +26,16 @@ const filterCls: Record<Filter, { active: string; inactive: string }> = {
 export function TopicPage() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const qc = useQueryClient();
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
   const [activeFilter, setActiveFilter] = useState<Filter>('all');
   const [search, setSearch] = useState('');
+
+  const filters: Filter[] = isAuthenticated
+    ? ['all', 'easy', 'medium', 'hard', 'unsolved', 'solved']
+    : ['all', 'easy', 'medium', 'hard'];
 
   const { data: allTopics = [] } = useQuery({
     queryKey: QUERY_KEYS.topics,
@@ -105,16 +112,22 @@ export function TopicPage() {
 
   const pct = data?.stats.percentage ?? 0;
 
+  function handleToggle(problemId: string, isCompleted: boolean) {
+    if (!isAuthenticated) {
+      navigate('/login', {
+        state: {
+          from: location,
+          pendingToggle: { problemId, isCompleted },
+        },
+      });
+      return;
+    }
+    toggleMutation.mutate({ problemId, isCompleted });
+  }
+
   return (
     <div className="bg-app min-h-screen">
-      {/* Header */}
-      <header className="sticky top-0 z-50 flex items-center justify-between px-4 sm:px-6 h-14 sm:h-16 bg-app/90 backdrop-blur-xl border-b border-dim">
-        <Link to="/dashboard" className="font-syne font-extrabold text-lg sm:text-xl tracking-tight text-prose no-underline">
-          Code<span className="text-accent">Path</span>
-        </Link>
-
-        <UserMenu />
-      </header>
+      <AppHeader />
 
       {/* Mobile topic selector */}
       <div className="lg:hidden px-4 py-2.5 border-b border-dim bg-surface">
@@ -126,7 +139,9 @@ export function TopicPage() {
           >
             {allTopics.map((t) => (
               <option key={t._id} value={t.slug}>
-                {t.title} · {t.stats?.completed ?? 0}/{t.stats?.total ?? 0}
+                {isAuthenticated
+                  ? `${t.title} · ${t.stats?.completed ?? 0}/${t.stats?.total ?? 0}`
+                  : `${t.title} · ${t.stats?.total ?? 0} problems`}
               </option>
             ))}
           </select>
@@ -140,7 +155,7 @@ export function TopicPage() {
       </div>
 
       {/* Body */}
-      <div className="max-w-screen-xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         <div className="lg:grid" style={{ gridTemplateColumns: '260px 1fr' }}>
 
           {/* Sidebar — desktop only */}
@@ -164,17 +179,21 @@ export function TopicPage() {
                     <TopicIcon title={t.title} slug={t.slug} size="sm" />
                     <span className="flex-1 text-[0.83rem]">{t.title}</span>
                     <span className="font-mono-dm text-xs text-muted">
-                      {t.stats?.completed ?? 0}/{t.stats?.total ?? 0}
+                      {isAuthenticated
+                        ? `${t.stats?.completed ?? 0}/${t.stats?.total ?? 0}`
+                        : t.stats?.total ?? 0}
                     </span>
                   </Link>
-                  <div className="mx-3 mt-0.5 mb-1.5">
-                    <div className="rounded-full overflow-hidden h-[3px] bg-dim">
-                      <div
-                        className="h-full rounded-full progress-fill bg-accent-3"
-                        style={{ width: `${topicPct}%` }}
-                      />
+                  {isAuthenticated && (
+                    <div className="mx-3 mt-0.5 mb-1.5">
+                      <div className="rounded-full overflow-hidden h-[3px] bg-dim">
+                        <div
+                          className="h-full rounded-full progress-fill bg-accent-3"
+                          style={{ width: `${topicPct}%` }}
+                        />
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               );
             })}
@@ -202,23 +221,25 @@ export function TopicPage() {
                     <span className="text-xs px-2.5 py-1 rounded-full font-mono-dm border border-dim text-muted">
                       {data.stats.total} problems
                     </span>
-                    <div className="flex items-center gap-2">
-                      <div className="rounded-full overflow-hidden bg-dim" style={{ width: 80, height: 4 }}>
-                        <div
-                          className="h-full rounded-full progress-fill bg-accent-3"
-                          style={{ width: `${pct}%` }}
-                        />
+                    {isAuthenticated && (
+                      <div className="flex items-center gap-2">
+                        <div className="rounded-full overflow-hidden bg-dim" style={{ width: 80, height: 4 }}>
+                          <div
+                            className="h-full rounded-full progress-fill bg-accent-3"
+                            style={{ width: `${pct}%` }}
+                          />
+                        </div>
+                        <span className="text-xs text-muted">
+                          {data.stats.completed}/{data.stats.total} solved
+                        </span>
                       </div>
-                      <span className="text-xs text-muted">
-                        {data.stats.completed}/{data.stats.total} solved
-                      </span>
-                    </div>
+                    )}
                   </div>
                 </div>
 
                 {/* Filter bar */}
                 <div className="flex flex-wrap gap-2 mb-4">
-                  {(['all', 'easy', 'medium', 'hard', 'unsolved', 'solved'] as Filter[]).map((f) => (
+                  {filters.map((f) => (
                     <button
                       key={f}
                       onClick={() => setActiveFilter(f)}
@@ -254,7 +275,7 @@ export function TopicPage() {
                         <ProblemRow
                           key={p._id}
                           problem={p}
-                          onToggle={(id, done) => toggleMutation.mutate({ problemId: id, isCompleted: done })}
+                          onToggle={handleToggle}
                         />
                       ))}
                     </div>

@@ -76,7 +76,7 @@ export function CompanyTags({ companies, maxVisible = 2 }: Props) {
 
       {extraCount > 0 && (
         <div
-          className="relative shrink-0"
+          className="relative shrink-0 flex"
           onMouseEnter={openPopover}
           onMouseLeave={scheduleClose}
         >

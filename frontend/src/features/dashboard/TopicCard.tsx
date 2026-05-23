@@ -5,7 +5,12 @@ import type { Topic } from '../../types';
 
 const diffTextCls = { easy: 'text-easy', medium: 'text-medium', hard: 'text-hard' } as const;
 
-export function TopicCard({ topic }: { topic: Topic }) {
+interface Props {
+  topic: Topic;
+  showProgress?: boolean;
+}
+
+export function TopicCard({ topic, showProgress = true }: Props) {
   const navigate = useNavigate();
   const { stats } = topic;
 
@@ -22,22 +27,30 @@ export function TopicCard({ topic }: { topic: Topic }) {
         </div>
       </div>
 
-      <div className="flex gap-3 mb-3">
-        {(['easy', 'medium', 'hard'] as const).map((d) => (
-          <div key={d} className="flex-1 text-center">
-            <div className={`text-xs font-mono-dm font-bold ${diffTextCls[d]}`}>
-              {stats.completedByDifficulty[d]}/{stats.byDifficulty[d]}
-            </div>
-            <div className="text-xs capitalize text-muted">{d}</div>
+      {showProgress ? (
+        <>
+          <div className="flex gap-3 mb-3">
+            {(['easy', 'medium', 'hard'] as const).map((d) => (
+              <div key={d} className="flex-1 text-center">
+                <div className={`text-xs font-mono-dm font-bold ${diffTextCls[d]}`}>
+                  {stats.completedByDifficulty[d]}/{stats.byDifficulty[d]}
+                </div>
+                <div className="text-xs capitalize text-muted">{d}</div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
 
-      <ProgressBar percentage={stats.percentage} height={6} />
-      <div className="flex justify-between items-center mt-2">
-        <span className="text-xs text-muted">{stats.completed}/{stats.total} solved</span>
-        <span className="text-xs font-mono-dm font-bold text-accent-3">{stats.percentage}%</span>
-      </div>
+          <ProgressBar percentage={stats.percentage} height={6} />
+          <div className="flex justify-between items-center mt-2">
+            <span className="text-xs text-muted">{stats.completed}/{stats.total} solved</span>
+            <span className="text-xs font-mono-dm font-bold text-accent-3">{stats.percentage}%</span>
+          </div>
+        </>
+      ) : (
+        <div className="text-xs font-mono-dm text-muted">
+          {stats.total} problems
+        </div>
+      )}
     </div>
   );
 }

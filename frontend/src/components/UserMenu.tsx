@@ -50,7 +50,7 @@ export function UserMenu() {
         aria-label="User menu"
         aria-expanded={open}
         aria-haspopup="true"
-        className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white bg-gradient-to-br from-accent to-accent-2 shrink-0 hover:opacity-90 transition-opacity"
+        className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white bg-linear-to-br from-accent to-accent-2 shrink-0 hover:opacity-90 transition-opacity"
       >
         {initials}
       </button>
@@ -85,7 +85,7 @@ export function UserMenu() {
               role="menuitem"
               onClick={() => {
                 setOpen(false);
-                navigate('/dashboard');
+                navigate('/');
               }}
               className="w-full text-left px-4 py-2.5 text-sm text-prose hover:bg-surface-2 transition-colors"
             >
