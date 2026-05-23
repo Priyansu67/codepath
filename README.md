@@ -3,7 +3,8 @@
 A full-stack DSA practice tracker built with the MERN stack and deployed on AWS.
 
 ## Live Demo
-> Deploy first, then add URL here.
+
+**https://codepath.priyansu.in/**
 
 **Demo credentials:**
 - Email: `demo@codepath.com`
