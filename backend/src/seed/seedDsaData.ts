@@ -126,16 +126,25 @@ async function seed(): Promise<void> {
     await Topic.findByIdAndUpdate(topic._id, { problemCount: count });
   }
 
-  console.log('👤 Creating demo user...');
-  const hash = await bcrypt.hash('Demo@1234', 12);
+  console.log('👤 Creating seed users...');
+  const demoHash = await bcrypt.hash('Demo@1234', 12);
+  const adminHash = await bcrypt.hash('Admin@1234', 12);
+
   await User.findOneAndUpdate(
     { email: 'demo@codepath.com' },
-    { name: 'Demo User', email: 'demo@codepath.com', passwordHash: hash, role: 'student' },
+    { name: 'Demo User', email: 'demo@codepath.com', passwordHash: demoHash, role: 'student' },
+    { upsert: true }
+  );
+
+  await User.findOneAndUpdate(
+    { email: 'admin@codepath.com' },
+    { name: 'Admin User', email: 'admin@codepath.com', passwordHash: adminHash, role: 'admin' },
     { upsert: true }
   );
 
   console.log(`✅ Seed complete! ${topics.length} topics, ${problems.length} problems.`);
-  console.log('   Demo login → demo@codepath.com / Demo@1234');
+  console.log('   Demo  → demo@codepath.com / Demo@1234');
+  console.log('   Admin → admin@codepath.com / Admin@1234');
   await mongoose.disconnect();
 }
 
