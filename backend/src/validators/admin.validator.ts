@@ -24,6 +24,8 @@ export const createProblemSchema = z.object({
     })
     .default({}),
   tags: z.array(z.string().max(40)).default([]),
+  companyTags: z.array(z.string().max(80)).default([]),
+  avgTime: z.string().max(20).default(''),
 });
 
 export const updateProblemSchema = createProblemSchema.partial().omit({ topicId: true });

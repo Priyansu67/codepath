@@ -1,79 +1,53 @@
+import { CirclePlay, Code2, FileText, type LucideIcon } from 'lucide-react';
 import type { Resources } from '../types';
 
-interface Props {
-  resources: Resources;
-}
-
-interface LinkDef {
+const LINKS: {
   key: keyof Resources;
-  label: string;
-  className: string;
-  hoverStyle: React.CSSProperties;
-}
-
-const LINKS: LinkDef[] = [
+  tooltip: string;
+  Icon: LucideIcon;
+  hoverCls: string;
+}[] = [
   {
     key: 'youtubeUrl',
-    label: 'YT',
-    className: 'yt',
-    hoverStyle: { background: 'rgba(255,0,0,0.12)', borderColor: 'rgba(255,0,0,0.3)', color: '#ff4444' },
+    tooltip: 'YouTube',
+    Icon: CirclePlay,
+    hoverCls: 'hover:bg-red-500/10 hover:border-red-500/30 hover:text-red-400',
   },
   {
     key: 'leetcodeUrl',
-    label: 'LC',
-    className: 'lc',
-    hoverStyle: { background: 'rgba(255,161,22,0.12)', borderColor: 'rgba(255,161,22,0.3)', color: '#ffa116' },
+    tooltip: 'LeetCode',
+    Icon: Code2,
+    hoverCls: 'hover:bg-orange-400/10 hover:border-orange-400/30 hover:text-orange-400',
   },
   {
     key: 'articleUrl',
-    label: '📄',
-    className: 'art',
-    hoverStyle: { background: 'rgba(124,106,255,0.12)', borderColor: 'rgba(124,106,255,0.3)', color: 'var(--accent)' },
+    tooltip: 'Article',
+    Icon: FileText,
+    hoverCls: 'hover:bg-accent/10 hover:border-accent/30 hover:text-accent',
   },
 ];
 
-function ResourceLink({ href, label, hoverStyle }: { href: string; label: string; hoverStyle: React.CSSProperties }) {
-  const [hovered, setHovered] = React.useState(false);
-
-  if (!href) return null;
-
-  return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      onClick={(e) => e.stopPropagation()}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      className="font-mono-dm text-xs font-medium rounded-md flex items-center justify-center transition-all"
-      style={{
-        width: 28,
-        height: 28,
-        background: 'var(--surface2)',
-        border: '1px solid var(--border)',
-        color: 'var(--muted)',
-        textDecoration: 'none',
-        ...(hovered ? hoverStyle : {}),
-      }}
-    >
-      {label}
-    </a>
-  );
-}
-
-import React from 'react';
-
-export function ResourceLinks({ resources }: Props) {
+export function ResourceLinks({ resources }: { resources: Resources }) {
   return (
     <div className="flex gap-1">
-      {LINKS.map(({ key, label, hoverStyle }) => (
-        <ResourceLink
-          key={key}
-          href={resources[key]}
-          label={label}
-          hoverStyle={hoverStyle}
-        />
-      ))}
+      {LINKS.map(({ key, tooltip, Icon, hoverCls }) => {
+        const href = resources[key];
+        if (!href) return null;
+        return (
+          <a
+            key={key}
+            href={href}
+            title={tooltip}
+            aria-label={tooltip}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className={`rounded-md w-7 h-7 flex items-center justify-center no-underline transition-all border border-dim text-muted bg-surface-2 ${hoverCls}`}
+          >
+            <Icon size={14} strokeWidth={2} />
+          </a>
+        );
+      })}
     </div>
   );
 }

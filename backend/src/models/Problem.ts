@@ -17,6 +17,8 @@ export interface IProblem {
   subtopic: string;
   resources: IResources;
   tags: string[];
+  companyTags: string[];
+  avgTime: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -39,6 +41,8 @@ const problemSchema = new mongoose.Schema<IProblemDocument>(
       articleUrl: { type: String, default: '' },
     },
     tags: [String],
+    companyTags: [{ type: String }],
+    avgTime: { type: String, default: '' },
   },
   { timestamps: true }
 );

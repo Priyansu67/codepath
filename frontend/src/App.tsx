@@ -6,18 +6,17 @@ import { router } from './routes/router';
 import { queryClient } from './lib/queryClient';
 import { useAuthStore } from './features/auth/authStore';
 import { authApi } from './api/auth';
+import { useTheme } from './hooks/useTheme';
 
 function AuthGate({ children }: { children: React.ReactNode }) {
   const { user, setUser, logout } = useAuthStore();
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {
-    // If no persisted user, skip the network call
     if (!user) {
       setChecking(false);
       return;
     }
-    // Verify the session is still valid (refresh cookie will be used automatically)
     authApi
       .me()
       .then((u) => setUser(u))
@@ -27,15 +26,10 @@ function AuthGate({ children }: { children: React.ReactNode }) {
 
   if (checking) {
     return (
-      <div className="flex items-center justify-center min-h-screen" style={{ background: 'var(--bg)' }}>
+      <div className="flex items-center justify-center min-h-screen bg-app">
         <div className="flex flex-col items-center gap-3">
-          <div
-            className="w-8 h-8 rounded-full border-2 animate-spin"
-            style={{ borderColor: 'var(--border)', borderTopColor: 'var(--accent)' }}
-          />
-          <span className="text-sm font-mono-dm" style={{ color: 'var(--muted)' }}>
-            Loading...
-          </span>
+          <div className="w-8 h-8 rounded-full border-2 border-dim border-t-accent animate-spin" />
+          <span className="text-sm font-mono-dm text-muted">Loading...</span>
         </div>
       </div>
     );
@@ -45,6 +39,7 @@ function AuthGate({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+  useTheme();
   return (
     <QueryClientProvider client={queryClient}>
       <AuthGate>
@@ -54,9 +49,9 @@ export default function App() {
         position="bottom-right"
         toastOptions={{
           style: {
-            background: 'var(--surface2)',
-            color: 'var(--text)',
-            border: '1px solid var(--border)',
+            background: 'var(--color-surface-2)',
+            color: 'var(--color-prose)',
+            border: '1px solid var(--color-dim)',
             fontFamily: 'DM Sans, sans-serif',
             fontSize: '0.85rem',
           },

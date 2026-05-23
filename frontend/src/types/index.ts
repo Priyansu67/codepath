@@ -23,6 +23,8 @@ export interface Problem {
   subtopic: string;
   resources: Resources;
   tags: string[];
+  companyTags: string[];
+  avgTime: string;
   isCompleted?: boolean;
   completedAt?: string | null;
 }

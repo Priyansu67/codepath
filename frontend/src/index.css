@@ -1,35 +1,75 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-:root {
-  --bg: #0a0a0f;
-  --surface: #111118;
-  --surface2: #18181f;
-  --border: #222230;
-  --accent: #7c6aff;
-  --accent2: #ff6a6a;
-  --accent3: #6affd4;
-  --text: #e8e8f0;
-  --muted: #6b6b80;
-  --easy: #6affd4;
-  --medium: #ffd86a;
-  --hard: #ff6a6a;
+@theme {
+  --color-app: #0a0a0f;
+  --color-surface: #111118;
+  --color-surface-2: #18181f;
+  --color-dim: #222230;
+  --color-accent: #7c6aff;
+  --color-accent-2: #ff6a6a;
+  --color-accent-3: #6affd4;
+  --color-prose: #e8e8f0;
+  --color-muted: #6b6b80;
+  --color-easy: #6affd4;
+  --color-medium: #ffd86a;
+  --color-hard: #ff6a6a;
+
+  --font-sans: "DM Sans", sans-serif;
+  --font-syne: Syne, sans-serif;
+  --font-mono-dm: "DM Mono", monospace;
+
+  --animate-fade-up: fade-up 0.3s ease;
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-body {
-  font-family: 'DM Sans', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
+@layer base {
+  body {
+    @apply bg-app text-prose font-sans antialiased overflow-x-hidden min-h-screen;
+  }
 }
 
+/* ─── Light theme ──────────────────────────────────────────────────────────── */
+html[data-theme="light"] {
+  color-scheme: light;
+
+  /* Soft surfaces — avoid pure white and high glare */
+  --color-app: #dfe0e8;
+  --color-surface: #e8e9f0;
+  --color-surface-2: #d8d9e4;
+  --color-dim: #b8b9c9;
+  --color-prose: #222232;
+  --color-muted: #5c5c70;
+
+  /* Richer accents — readable on light backgrounds */
+  --color-accent: #6355d8;
+  --color-accent-2: #c94f4f;
+  --color-accent-3: #1a9e7a;
+  --color-easy: #0f8f72;
+  --color-medium: #a67c00;
+  --color-hard: #c94545;
+}
+
+html[data-theme="light"] body::before {
+  opacity: 0.12;
+}
+
+html[data-theme="light"] .check-wrap input:checked ~ .check-box::after {
+  border-color: #f4fffb;
+}
+
+/* Subtle noise texture overlay */
 body::before {
-  content: '';
+  content: "";
   position: fixed;
   inset: 0;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
@@ -38,14 +78,15 @@ body::before {
   opacity: 0.4;
 }
 
-/* Custom checkbox */
+/* Custom animated checkbox */
 .check-wrap {
   position: relative;
   width: 22px;
   height: 22px;
   flex-shrink: 0;
 }
-.check-wrap input[type='checkbox'] {
+
+.check-wrap input[type="checkbox"] {
   opacity: 0;
   position: absolute;
   inset: 0;
@@ -54,10 +95,11 @@ body::before {
   width: 100%;
   height: 100%;
 }
+
 .check-box {
   position: absolute;
   inset: 0;
-  border: 1.5px solid var(--border);
+  border: 1.5px solid var(--color-dim);
   border-radius: 6px;
   background: transparent;
   transition: all 0.2s;
@@ -65,35 +107,29 @@ body::before {
   align-items: center;
   justify-content: center;
 }
+
 .check-wrap input:checked ~ .check-box {
-  background: var(--accent3);
-  border-color: var(--accent3);
+  background: var(--color-easy);
+  border-color: var(--color-easy);
 }
+
 .check-box::after {
-  content: '';
+  content: "";
   width: 5px;
   height: 9px;
-  border: 2px solid #0a0a0f;
+  border: 2px solid var(--color-app);
   border-top: none;
   border-left: none;
   transform: rotate(45deg) scale(0);
   transition: transform 0.15s;
   margin-top: -2px;
 }
+
 .check-wrap input:checked ~ .check-box::after {
   transform: rotate(45deg) scale(1);
 }
 
-/* Progress bar fill transitions */
-.progress-fill { transition: width 0.8s ease; }
-
-/* Fade-in animation */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
+/* Progress bar width transition — dynamic widths stay inline */
+.progress-fill {
+  transition: width 0.8s ease;
 }
-.fade-up { animation: fadeUp 0.3s ease; }
-
-/* Syne font class */
-.font-syne { font-family: 'Syne', sans-serif; }
-.font-mono-dm { font-family: 'DM Mono', monospace; }

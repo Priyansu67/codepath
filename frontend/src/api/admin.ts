@@ -10,7 +10,6 @@ interface AdminStats {
 export interface CreateTopicPayload {
   title: string;
   description: string;
-  icon: string;
   order: number;
 }
 
@@ -29,6 +28,8 @@ export interface CreateProblemPayload {
     articleUrl: string;
   };
   tags: string[];
+  companyTags: string[];
+  avgTime: string;
 }
 
 export type UpdateProblemPayload = Partial<Omit<CreateProblemPayload, 'topicId'>>;

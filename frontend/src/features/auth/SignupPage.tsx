@@ -30,51 +30,33 @@ export function SignupPage() {
     }
   }
 
-  const inputStyle: React.CSSProperties = {
-    background: 'var(--surface2)',
-    border: '1px solid var(--border)',
-    color: 'var(--text)',
-  };
+  const fields = [
+    { label: 'NAME',     value: name,     setter: setName,     type: 'text',     placeholder: 'Your name' },
+    { label: 'EMAIL',    value: email,    setter: setEmail,    type: 'email',    placeholder: 'you@example.com' },
+    { label: 'PASSWORD', value: password, setter: setPassword, type: 'password', placeholder: 'Min 8 chars, 1 upper, 1 number' },
+  ];
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center px-4"
-      style={{ background: 'var(--bg)' }}
-    >
+    <div className="min-h-screen flex items-center justify-center px-4 bg-app">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <h1 className="font-syne font-extrabold text-2xl tracking-tight">
-            Code<span style={{ color: 'var(--accent)' }}>Path</span>
+          <h1 className="font-syne font-extrabold text-2xl tracking-tight text-prose">
+            Code<span className="text-accent">Path</span>
           </h1>
-          <p className="text-sm mt-1" style={{ color: 'var(--muted)' }}>
-            Create your account and start tracking
-          </p>
+          <p className="text-sm mt-1 text-muted">Create your account and start tracking</p>
         </div>
 
-        <form
-          onSubmit={handleSubmit}
-          className="rounded-xl p-6 space-y-4"
-          style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
-        >
-          {[
-            { label: 'NAME', value: name, setter: setName, type: 'text', placeholder: 'Priyansu Choudhury' },
-            { label: 'EMAIL', value: email, setter: setEmail, type: 'email', placeholder: 'you@example.com' },
-            { label: 'PASSWORD', value: password, setter: setPassword, type: 'password', placeholder: 'Min 8 chars, 1 upper, 1 number' },
-          ].map(({ label, value, setter, type, placeholder }) => (
+        <form onSubmit={handleSubmit} className="rounded-xl p-6 space-y-4 bg-surface border border-dim">
+          {fields.map(({ label, value, setter, type, placeholder }) => (
             <div key={label}>
-              <label className="block text-xs font-mono-dm mb-1.5" style={{ color: 'var(--muted)' }}>
-                {label}
-              </label>
+              <label className="block text-xs font-mono-dm mb-1.5 text-muted">{label}</label>
               <input
                 type={type}
                 required
                 value={value}
                 onChange={(e) => setter(e.target.value)}
                 placeholder={placeholder}
-                className="w-full rounded-lg px-3 py-2.5 text-sm outline-none transition-colors"
-                style={inputStyle}
-                onFocus={(e) => (e.target.style.borderColor = 'var(--accent)')}
-                onBlur={(e) => (e.target.style.borderColor = 'var(--border)')}
+                className="w-full rounded-lg px-3 py-2.5 text-sm outline-none transition-colors bg-surface-2 border border-dim text-prose focus:border-accent"
               />
             </div>
           ))}
@@ -82,16 +64,15 @@ export function SignupPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2.5 rounded-lg text-sm font-semibold transition-opacity disabled:opacity-60"
-            style={{ background: 'var(--accent)', color: '#fff' }}
+            className="w-full py-2.5 rounded-lg text-sm font-semibold transition-opacity disabled:opacity-60 bg-accent text-white hover:opacity-90"
           >
             {loading ? 'Creating account…' : 'Create Account'}
           </button>
         </form>
 
-        <p className="text-center text-sm mt-4" style={{ color: 'var(--muted)' }}>
+        <p className="text-center text-sm mt-4 text-muted">
           Already have an account?{' '}
-          <Link to="/login" style={{ color: 'var(--accent)' }}>
+          <Link to="/login" className="text-accent no-underline hover:underline">
             Sign in
           </Link>
         </p>
