@@ -10,9 +10,8 @@ interface Props {
 export function ProblemRow({ problem, onToggle }: Props) {
   return (
     <div
-      className="grid items-center gap-4 px-4 py-3 rounded-xl transition-all"
+      className="flex items-center gap-2 sm:gap-4 px-3 sm:px-4 py-3 rounded-xl transition-all"
       style={{
-        gridTemplateColumns: '36px 1fr auto auto auto',
         border: '1px solid transparent',
         opacity: problem.isCompleted ? 0.65 : 1,
       }}
@@ -26,7 +25,7 @@ export function ProblemRow({ problem, onToggle }: Props) {
       }}
     >
       {/* Checkbox */}
-      <label className="check-wrap" onClick={(e) => e.stopPropagation()}>
+      <label className="check-wrap shrink-0" onClick={(e) => e.stopPropagation()}>
         <input
           type="checkbox"
           checked={problem.isCompleted ?? false}
@@ -35,22 +34,27 @@ export function ProblemRow({ problem, onToggle }: Props) {
         <div className="check-box" />
       </label>
 
-      {/* Title */}
+      {/* Title — fills remaining space, truncates on overflow */}
       <span
-        className="text-sm font-medium"
+        className="flex-1 text-sm font-medium truncate min-w-0"
         style={{
           textDecoration: problem.isCompleted ? 'line-through' : 'none',
           textDecorationColor: 'var(--muted)',
         }}
+        title={problem.title}
       >
         {problem.title}
       </span>
 
       {/* Difficulty */}
-      <DifficultyBadge difficulty={problem.difficulty} />
+      <span className="shrink-0">
+        <DifficultyBadge difficulty={problem.difficulty} />
+      </span>
 
       {/* Resources */}
-      <ResourceLinks resources={problem.resources} />
+      <div className="shrink-0">
+        <ResourceLinks resources={problem.resources} />
+      </div>
     </div>
   );
 }
